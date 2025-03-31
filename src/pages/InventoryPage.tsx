@@ -1,7 +1,7 @@
 import ArticuloForm from '../components/joyeria/ArticuloForm';
 import ArticuloList from '../components/joyeria/ArticuloList';
-import MaterialFilter from '../components/joyeria/MaterialFilter';
-import StatsPanel from '../components/joyeria/StatsPanel';
+// import MaterialFilter from '../components/joyeria/MaterialFilter';
+// import StatsPanel from '../components/joyeria/StatsPanel';
 
 export default function InventoryPage() {
   return (
