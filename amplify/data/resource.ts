@@ -1,18 +1,28 @@
-import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
-
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
 adding a new "isDone" field as a boolean. The authorization rule below
 specifies that any user authenticated via an API key can "create", "read",
 "update", and "delete" any "Todo" records.
 =========================================================================*/
-const schema = a.schema({
-  Todo: a
-    .model({
-      content: a.string(),
-    })
-    .authorization((allow) => [allow.owner()]),
-});
+import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
+
+const schema = a
+  .schema({
+    Articulo: a.model({
+      id: a.id().required(),
+      nombre: a.string().required(),
+      fechaIngreso: a.string().required(), // Cambiado de datetime a string
+      tipoMaterial: a.string().required(),
+      pesoUnitario: a.float().required(),
+      cantidad: a.integer().required(),
+      vendido: a.boolean().default(false),
+      fechaVenta: a.string(), // Cambiado de date a string
+      precioVenta: a.float(),
+      descripcion: a.string(),
+      imagen: a.string(),
+    }),
+  })
+  .authorization((allow) => [allow.authenticated()]);
 
 export type Schema = ClientSchema<typeof schema>;
 
@@ -20,10 +30,6 @@ export const data = defineData({
   schema,
   authorizationModes: {
     defaultAuthorizationMode: "userPool",
-    // API Key is used for a.allow.public() rules
-    apiKeyAuthorizationMode: {
-      expiresInDays: 30,
-    },
   },
 });
 
