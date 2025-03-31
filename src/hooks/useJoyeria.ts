@@ -1,25 +1,24 @@
 import { useEffect, useState } from "react";
 import { generateClient } from "aws-amplify/data";
 import { type Schema } from "../../amplify/data/resource";
+import { Articulo } from "../types/joyeria";
 
 const client = generateClient<Schema>();
 
 export const useJoyeria = () => {
-  const [articulos, setArticulos] = useState<Schema["Articulo"][]>([]);
+  const [articulos, setArticulos] = useState<Articulo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Función para formatear fecha en el formato exacto que Amplify espera
   const formatAmplifyDate = (date: Date) => {
-    return date.toISOString().replace("Z", ""); // Remueve la 'Z' final
+    return date.toISOString().replace("Z", "");
   };
 
-  // Cargar todos los artículos
   const fetchArticulos = async () => {
     try {
       setLoading(true);
       const { data } = await client.models.Articulo.list();
-      setArticulos(data);
+      setArticulos(data as Articulo[]);
       setError(null);
     } catch (err) {
       console.error("Error fetching articles:", err);
@@ -29,17 +28,21 @@ export const useJoyeria = () => {
     }
   };
 
-  // Registrar nuevo artículo
   const addArticulo = async (
     articulo: Omit<
-      Schema["Articulo"],
-      "id" | "vendido" | "fechaIngreso" | "fechaVenta" | "precioVenta"
+      Articulo,
+      | "id"
+      | "vendido"
+      | "fechaIngreso"
+      | "fechaVenta"
+      | "precioVenta"
+      | "updatedAt"
+      | "imagen"
     >
   ) => {
     try {
       setLoading(true);
 
-      // Validación de campos requeridos
       if (
         !articulo.nombre ||
         !articulo.tipoMaterial ||
@@ -51,33 +54,36 @@ export const useJoyeria = () => {
 
       const completeArticulo = {
         ...articulo,
-        fechaIngreso: formatAmplifyDate(new Date()), // Fecha formateada correctamente
+        fechaIngreso: formatAmplifyDate(new Date()),
         vendido: false,
+        fechaVenta: null,
+        precioVenta: null,
+        imagen: null,
       };
 
-      console.log("Datos a enviar a DynamoDB:", completeArticulo);
-
-      const { data, errors } = await client.models.Articulo.create({
-        ...completeArticulo,
-        fechaIngreso: completeArticulo.fechaIngreso, // Asegurar el formato
-      });
+      const { data, errors } = await client.models.Articulo.create(
+        completeArticulo
+      );
 
       if (errors) {
         throw new Error(errors.map((e) => e.message).join(", "));
       }
 
       await fetchArticulos();
-      return data;
+      return data as Articulo;
     } catch (err) {
       console.error("Error completo al crear artículo:", err);
-      setError(`Error al crear artículo: ${err.message}`);
+      setError(
+        `Error al crear artículo: ${
+          err instanceof Error ? err.message : "Error desconocido"
+        }`
+      );
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  // Vender artículo (función faltante)
   const sellArticulo = async (id: string, precioVenta: number) => {
     try {
       const { data, errors } = await client.models.Articulo.update({
@@ -91,14 +97,14 @@ export const useJoyeria = () => {
         throw new Error(errors.map((e) => e.message).join(", "));
       }
 
-      return data;
+      await fetchArticulos();
+      return data as Articulo;
     } catch (error) {
       console.error("Error selling article:", error);
       throw error;
     }
   };
 
-  // Calcular estadísticas
   const calcularEstadisticas = () => {
     const enStock = articulos.filter((a) => !a.vendido);
     const vendidos = articulos.filter((a) => a.vendido);
@@ -107,8 +113,8 @@ export const useJoyeria = () => {
 
     enStock.forEach((a) => {
       const material = a.tipoMaterial || "Otro";
-      const peso = parseFloat(String(a.pesoUnitario)) || 0;
-      const cant = parseInt(String(a.cantidad)) || 0;
+      const peso = a.pesoUnitario || 0;
+      const cant = a.cantidad || 0;
       pesoPorMaterial[material] =
         (pesoPorMaterial[material] || 0) + peso * cant;
     });

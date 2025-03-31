@@ -18,9 +18,9 @@ export default function ArticuloForm() {
     
       const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsSubmitting(true);
         
         try {
-          // Validación mejorada
           if (!form.nombre.trim() || !form.tipoMaterial.trim() || 
               !form.pesoUnitario || !form.cantidad) {
             toast.error('Por favor complete todos los campos requeridos');
@@ -35,7 +35,7 @@ export default function ArticuloForm() {
             return;
           }
       
-          const result = await addArticulo({
+          await addArticulo({
             nombre: form.nombre.trim(),
             tipoMaterial: form.tipoMaterial,
             pesoUnitario: peso,
@@ -44,9 +44,7 @@ export default function ArticuloForm() {
           });
       
           toast.success('¡Artículo creado exitosamente!');
-          console.log("Respuesta de DynamoDB:", result);
           
-          // Reset del formulario
           setForm({
             nombre: '',
             tipoMaterial: 'acero inoxidable',
@@ -54,10 +52,11 @@ export default function ArticuloForm() {
             cantidad: '1',
             descripcion: ''
           });
-      
         } catch (error) {
-          toast.error(`Error al crear artículo: ${error.message}`);
+          toast.error(`Error al crear artículo: ${error instanceof Error ? error.message : 'Error desconocido'}`);
           console.error("Detalles completos del error:", error);
+        } finally {
+          setIsSubmitting(false);
         }
       };
 

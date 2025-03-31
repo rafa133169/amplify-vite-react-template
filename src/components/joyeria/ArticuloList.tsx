@@ -5,6 +5,7 @@ import MaterialFilter from './MaterialFilter';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import StatsPanel from './StatsPanel';
+// import { Articulo } from '../../types/joyeria';
 
 export default function ArticuloList() {
   const { articulos, loading, error, fetchArticulos } = useJoyeria();
@@ -21,9 +22,9 @@ export default function ArticuloList() {
   // Función de filtrado combinada
   const filteredArticulos = articulos.filter(articulo => {
     const matchesSearch = 
-      articulo.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      articulo.tipoMaterial?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      articulo.descripcion?.toLowerCase()?.includes(searchTerm.toLowerCase());
+      articulo.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      articulo.tipoMaterial.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (articulo.descripcion && articulo.descripcion.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesMaterial = 
       materialFilter === 'todos' || 

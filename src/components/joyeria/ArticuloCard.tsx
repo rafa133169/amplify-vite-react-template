@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import { useJoyeria } from '../../hooks/useJoyeria';
 import { toast } from 'react-toastify';
+import { Articulo } from '../../types/joyeria';
 
-export default function ArticuloCard({ articulo, onUpdate }: { 
-  articulo: any;
-  onUpdate: () => Promise<void>;
-}) {
+
+interface ArticuloCardProps {
+  articulo: Articulo;
+  onUpdate?: () => Promise<void>;
+}
+export default function ArticuloCard({ articulo, onUpdate }:  ArticuloCardProps
+) {
   const { sellArticulo } = useJoyeria();
   const [precioVenta, setPrecioVenta] = useState('');
   const [mostrarFormVenta, setMostrarFormVenta] = useState(false);
@@ -23,14 +27,17 @@ export default function ArticuloCard({ articulo, onUpdate }: {
       toast.success('Artículo vendido exitosamente!');
       setMostrarFormVenta(false);
       setPrecioVenta('');
-      await onUpdate(); // Actualizar la lista después de la venta
+      if (onUpdate) {
+        await onUpdate();
+      }
     } catch (error) {
       console.error("Error al vender artículo:", error);
-      toast.error(`Error al vender: ${error.message}`);
+      toast.error(`Error al vender: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     } finally {
       setIsSelling(false);
     }
   };
+
 
   return (
     <div className={`border rounded-lg p-4 ${articulo.vendido ? 'bg-gray-100' : 'bg-white'}`}>

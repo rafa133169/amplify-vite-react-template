@@ -1,7 +1,9 @@
 import { useMemo } from 'react';
 import { useJoyeria } from '../../hooks/useJoyeria';
-import { toast } from 'react-toastify';
-
+// import { toast } from 'react-toastify';
+interface MaterialFilterProps {
+  onFilterChange: (material: string) => void;
+}
 const materiales = ['todos', 'acero inoxidable', 'plata', 'oro', 'platino', 'otros'];
 
 interface MaterialFilterProps {
