@@ -5,6 +5,7 @@ export interface Articulo {
   tipoMaterial: string;
   pesoUnitario: number;
   cantidad: number;
+  precioCompra: number; // Nuevo campo
   vendido: boolean | null;
   fechaVenta: string | null;
   precioVenta: number | null;

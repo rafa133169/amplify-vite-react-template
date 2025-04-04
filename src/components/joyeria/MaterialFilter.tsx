@@ -1,33 +1,32 @@
 import { useMemo } from 'react';
 import { useJoyeria } from '../../hooks/useJoyeria';
-// import { toast } from 'react-toastify';
-interface MaterialFilterProps {
-  onFilterChange: (material: string) => void;
-}
-const materiales = ['todos', 'acero inoxidable', 'plata', 'oro', 'platino', 'otros'];
+
+type MaterialType = 'todos' | 'acero inoxidable' | 'plata' | 'oro' | 'platino' | 'otros';
 
 interface MaterialFilterProps {
-  onFilterChange: (material: string) => void;
+  onFilterChange: (material: MaterialType) => void;
+  selectedMaterial: MaterialType;
 }
 
-export default function MaterialFilter({ onFilterChange }: MaterialFilterProps) {
+const MATERIALES: MaterialType[] = ['todos', 'acero inoxidable', 'plata', 'oro', 'platino', 'otros'];
+
+export default function MaterialFilter({ onFilterChange, selectedMaterial }: MaterialFilterProps) {
   const { articulos, calcularEstadisticas } = useJoyeria();
 
-  // Calcular estadísticas de manera eficiente
   const { enStock, vendidos, pesoPorMaterial } = useMemo(() => {
     return calcularEstadisticas();
-  }, [articulos]);
+  }, [articulos, calcularEstadisticas]);
 
   return (
     <div className="bg-white p-4 rounded-lg shadow-md">
       <h3 className="font-medium mb-2">Filtrar por material</h3>
       <div className="flex flex-wrap gap-2">
-        {materiales.map(material => (
+        {MATERIALES.map(material => (
           <button
             key={material}
             onClick={() => onFilterChange(material)}
             className={`px-3 py-1 rounded-full text-sm transition-colors ${
-              material === 'todos' 
+              material === selectedMaterial
                 ? 'bg-blue-600 text-white'
                 : 'bg-gray-200 hover:bg-gray-300'
             }`}

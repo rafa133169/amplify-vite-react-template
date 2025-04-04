@@ -11,6 +11,7 @@ export default function ArticuloForm() {
         tipoMaterial: 'acero inoxidable',
         pesoUnitario: '',
         cantidad: '1',
+        precioCompra:'',
         descripcion: ''
       });
       const [isSubmitting, setIsSubmitting] = useState(false);
@@ -22,15 +23,17 @@ export default function ArticuloForm() {
         
         try {
           if (!form.nombre.trim() || !form.tipoMaterial.trim() || 
-              !form.pesoUnitario || !form.cantidad) {
+              !form.pesoUnitario || !form.cantidad || !form.precioCompra) {
             toast.error('Por favor complete todos los campos requeridos');
             return;
           }
       
           const peso = parseFloat(form.pesoUnitario);
           const cantidad = parseInt(form.cantidad);
+          const precioCompra = parseFloat(form.precioCompra); // Nueva conversión
+
       
-          if (isNaN(peso) || isNaN(cantidad)) {
+          if (isNaN(peso) || isNaN(cantidad) || isNaN(precioCompra)) {
             toast.error('Peso y cantidad deben ser números válidos');
             return;
           }
@@ -40,6 +43,7 @@ export default function ArticuloForm() {
             tipoMaterial: form.tipoMaterial,
             pesoUnitario: peso,
             cantidad: cantidad,
+            precioCompra: precioCompra, // Nuevo campo
             descripcion: form.descripcion.trim()
           });
       
@@ -50,8 +54,10 @@ export default function ArticuloForm() {
             tipoMaterial: 'acero inoxidable',
             pesoUnitario: '',
             cantidad: '1',
+            precioCompra:'',
             descripcion: ''
           });
+          window.location.reload();
         } catch (error) {
           toast.error(`Error al crear artículo: ${error instanceof Error ? error.message : 'Error desconocido'}`);
           console.error("Detalles completos del error:", error);
@@ -102,18 +108,26 @@ export default function ArticuloForm() {
               required
             />
           </div>
+         
           
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Cantidad</label>
-            <input
-              type="number"
-              min="1"
-              value={form.cantidad}
-              onChange={(e) => setForm({...form, cantidad: e.target.value})}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-              required
-            />
-          </div>
+  <div>
+  <label className="block text-sm font-medium text-gray-700">Cantidad</label>
+  <div className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-gray-100">
+    1
+  </div>
+</div>
+<div>
+    <label className="block text-sm font-medium text-gray-700">Precio de Compra (USD)</label>
+    <input
+      type="number"
+      step="0.01"
+      min="0"
+      value={form.precioCompra}
+      onChange={(e) => setForm({...form, precioCompra: e.target.value})}
+      className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+      required
+    />
+  </div>
         </div>
         
         <div className="mt-4">

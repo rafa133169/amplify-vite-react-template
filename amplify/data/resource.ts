@@ -8,19 +8,25 @@ import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 
 const schema = a
   .schema({
-    Articulo: a.model({
-      id: a.id().required(),
-      nombre: a.string().required(),
-      fechaIngreso: a.string().required(), // Cambiado de datetime a string
-      tipoMaterial: a.string().required(),
-      pesoUnitario: a.float().required(),
-      cantidad: a.integer().required(),
-      vendido: a.boolean().default(false),
-      fechaVenta: a.string(), // Cambiado de date a string
-      precioVenta: a.float(),
-      descripcion: a.string(),
-      imagen: a.string(),
-    }),
+    Articulo: a
+      .model({
+        id: a.id().required(),
+        nombre: a.string().required(),
+        fechaIngreso: a.string().required(), // Cambiado de datetime a string
+        tipoMaterial: a.string().required(),
+        pesoUnitario: a.float().required(),
+        cantidad: a.integer(),
+        precioCompra: a.float(),
+        vendido: a.boolean().default(false),
+        fechaVenta: a.string(), // Cambiado de date a string
+        precioVenta: a.float(),
+        descripcion: a.string(),
+        imagen: a.string(),
+      })
+      .authorization((allow) => [
+        // Permite a todos los usuarios autenticados acceder a todos los artículos
+        allow.authenticated().to(["read", "create", "update", "delete"]),
+      ]),
   })
   .authorization((allow) => [allow.authenticated()]);
 
